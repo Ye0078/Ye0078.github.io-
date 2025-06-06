@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ဈေးမြှောက်နူတ် Calculator</title>
+  <link rel="icon" href="https://raw.githubusercontent.com/Ye0078/Ye0078.github.io-/refs/heads/main/330BCF00-0079-4DA2-9A25-38DD32F957BE.png" type="image/png" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap');
 
@@ -12,40 +13,105 @@
       font-family: 'Noto Sans Myanmar', sans-serif;
       margin: 0;
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
+      display: flex; /* Use flexbox */
+      flex-direction: column; /* Stack items vertically */
+      justify-content: center; /* Center items vertically */
+      align-items: center; /* Center items horizontally */
+      padding: 20px;
     }
 
     .container {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 20px;
-      padding: 25px 20px;
+      padding: 20px;
       width: 100%;
-      max-width: 480px;
-      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+      max-width: 600px;
+      box-shadow: 0 12px 40px rgba(255, 105, 180, 0.4);
       text-align: center;
+      position: relative; /* Crucial for absolute positioning of stars */
+      overflow: hidden; /* Ensures stars don't exceed container boundaries visually if they are part of its flow */
+    }
+
+    .main-logo {
+      width: 100px; /* Logo's width */
+      height: 100px; /* Make height equal to width for perfect circle if border-radius: 50% */
+      margin-bottom: 20px; /* Space between logo and the next element (label) */
+      
+      /* Styles for a better look */
+      border-radius: 50%; /* Make the logo perfectly circular */
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+      transition: all 0.3s ease; /* Smooth transition for hover effects */
+      object-fit: cover; /* Ensures the image covers the area without distortion */
+      z-index: 2; /* Ensure logo is above stars */
+      position: relative; /* To make sure z-index works */
+    }
+
+    .main-logo:hover {
+      transform: scale(1.05); /* Slightly enlarge on hover */
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); /* Darker shadow on hover */
+    }
+
+    /* Star Effect Styles */
+    #star-effect {
+      position: absolute;
+      top: 0;
+      width: 100%; /* Cover the entire width of the container */
+      height: 150px; /* Adjust height based on how far stars should fall within this visual area */
+      left: 50%;
+      transform: translateX(-50%); /* Center horizontally */
+      pointer-events: none; /* Allows clicks/interactions on elements behind it */
+      overflow: hidden; /* Keep stars inside this effect area */
+      z-index: 1; /* Place stars below logo but above container background */
+    }
+
+    .star {
+      position: absolute;
+      background-color: rgba(255, 255, 200, 0.8); /* Soft yellow/white stars */
+      border-radius: 50%;
+      opacity: 0; /* Start invisible */
+      animation: fallAndFade linear infinite; /* Apply the animation */
+      z-index: 1; /* Make sure stars are above other elements if needed, but below interactive ones */
+    }
+
+    /* Keyframes for falling and fading animation */
+    @keyframes fallAndFade {
+      0% {
+        transform: translateY(-10px); /* Start slightly above the top */
+        opacity: 0;
+      }
+      10% {
+        opacity: 1; /* Quickly become visible */
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(160px); /* Fall beyond the height of #star-effect to disappear cleanly */
+        opacity: 0; /* Fade out at the end */
+      }
     }
 
     h1 {
       font-weight: 700;
-      font-size: 22px;
-      margin-bottom: 15px;
+      font-size: 24px;
+      margin-bottom: 20px;
       color: #d81e5b;
-      text-shadow: 0 0 5px #ff6f91;
+      text-shadow: 0 0 8px #ff6f91;
     }
 
     label {
       display: block;
-      font-size: 15px;
+      font-size: 16px;
       margin-bottom: 10px;
       font-weight: 600;
       color: #333;
     }
 
     input[type="number"] {
-      width: 100%;
+      max-width: 300px;
+      display: block;
+      margin: 0 auto 15px auto;
+
       padding: 12px 15px;
       border-radius: 10px;
       border: 2px solid #ff6f91;
@@ -58,22 +124,22 @@
 
     input[type="number"]:focus {
       border-color: #d81e5b;
-      box-shadow: 0 0 10px #ff6f91;
+      box-shadow: 0 0 15px #ff6f91;
     }
 
     .results {
-      margin-top: 25px;
+      margin-top: 30px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
       gap: 10px;
     }
 
     .result-item {
       background: #ffe1eb;
-      border-radius: 14px;
-      padding: 8px 5px;
-      height: 100px;
-      box-shadow: 0 3px 10px rgba(216, 30, 91, 0.15);
+      border-radius: 16px;
+      padding: 10px;
+      height: 110px;
+      box-shadow: 0 5px 15px rgba(216, 30, 91, 0.2);
       font-size: 13px;
       font-weight: 600;
       color: #d81e5b;
@@ -83,32 +149,40 @@
       align-items: center;
       text-align: center;
       transition: all 0.3s ease;
+
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .result-item:hover {
       background: #ffd4e3;
-      transform: translateY(-4px) scale(1.01);
-      box-shadow: 0 6px 12px rgba(216, 30, 91, 0.25);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 10px 20px rgba(216, 30, 91, 0.3);
     }
 
     .highlight {
-      font-size: 16px;
+      font-size: 13px;
       color: #fff;
       font-weight: 800;
       background: linear-gradient(to right, #ff416c, #ff4b2b);
-      padding: 3px 8px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px #ff4b2b;
+      padding: 4px 8px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #ff4b2b;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     .price {
-      font-size: 12px;
+      font-size: 11px;
       color: #ff6f91;
       opacity: 0.85;
     }
 
     .label {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
     }
   </style>
@@ -116,7 +190,10 @@
 <body>
 
   <div class="container">
-    <h1>ဈေးမြှောက်နူတ် Calculator</h1>
+    <img src="https://raw.githubusercontent.com/Ye0078/Ye0078.github.io-/refs/heads/main/330BCF00-0079-4DA2-9A25-38DD32F957BE.png" alt="Calculator Logo" class="main-logo" />
+    
+    <div id="star-effect"></div> <!-- Stars will be generated here -->
+
     <label for="basePrice">မြှောက်မည့် ဈေးနူတ် (ကျပ်)</label>
     <input type="number" id="basePrice" min="0" value="770" />
     <div class="results" id="results"></div>
@@ -125,6 +202,7 @@
   <script>
     const basePriceInput = document.getElementById('basePrice');
     const resultsDiv = document.getElementById('results');
+    const starEffectContainer = document.getElementById('star-effect'); // Get the star container
 
     const multipliers = [
       { label: "86", price: 61.50 },
@@ -172,7 +250,7 @@
     function updateResults() {
       const base = parseFloat(basePriceInput.value);
       if (isNaN(base) || base <= 0) {
-        resultsDiv.innerHTML = '<p style="color: red; font-weight: 700;">ကျေးဇူးပြုပြီး ညှိထားတဲ့ ဈေးနူတ်တစ်ခု ထည့်ပါ။</p>';
+        resultsDiv.innerHTML = '<p style="color: red; font-weight: 700; text-align: center;">ကျေးဇူးပြုပြီး ညှိထားတဲ့ ဈေးနူတ်တစ်ခု ထည့်ပါ။</p>';
         return;
       }
 
@@ -190,6 +268,37 @@
         resultsDiv.appendChild(div);
       });
     }
+
+    // Function to create and add a single star
+    function createStar() {
+      const star = document.createElement('div');
+      star.className = 'star';
+      
+      // Random size for stars (2px to 5px)
+      const size = Math.random() * 3 + 2; 
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+
+      // Random horizontal position within the star-effect container
+      star.style.left = `${Math.random() * 100}%`;
+      
+      // Random animation duration for varied falling speed (2 to 5 seconds)
+      const duration = Math.random() * 3 + 2; 
+      star.style.animationDuration = `${duration}s`;
+      
+      // Random animation delay for staggered appearance
+      star.style.animationDelay = `${Math.random() * 0.5}s`; 
+
+      starEffectContainer.appendChild(star);
+
+      // Remove star element after its animation ends to prevent DOM bloat
+      star.addEventListener('animationend', () => {
+        star.remove();
+      });
+    }
+
+    // Generate stars at a regular interval (every 200ms)
+    setInterval(createStar, 200);
 
     basePriceInput.addEventListener("input", updateResults);
     updateResults();
