@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ဈေးမြှောက်နူတ် Calculator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap');
+
+    body {
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+      font-family: 'Noto Sans Myanmar', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px 20px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: #d81e5b;
+      text-shadow: 0 0 5px #ff6f91;
+    }
+
+    label {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 10px;
+      border: 2px solid #ff6f91;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: #d81e5b;
+      box-shadow: 0 0 10px #ff6f91;
+    }
+
+    .results {
+      margin-top: 25px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+    }
+
+    .result-item {
+      background: #ffe1eb;
+      border-radius: 14px;
+      padding: 8px 5px;
+      height: 100px;
+      box-shadow: 0 3px 10px rgba(216, 30, 91, 0.15);
+      font-size: 13px;
+      font-weight: 600;
+      color: #d81e5b;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .result-item:hover {
+      background: #ffd4e3;
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 6px 12px rgba(216, 30, 91, 0.25);
+    }
+
+    .highlight {
+      font-size: 16px;
+      color: #fff;
+      font-weight: 800;
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      padding: 3px 8px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #ff4b2b;
+    }
+
+    .price {
+      font-size: 12px;
+      color: #ff6f91;
+      opacity: 0.85;
+    }
+
+    .label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>ဈေးမြှောက်နူတ် Calculator</h1>
+    <label for="basePrice">မြှောက်မည့် ဈေးနူတ် (ကျပ်)</label>
+    <input type="number" id="basePrice" min="0" value="770" />
+    <div class="results" id="results"></div>
+  </div>
+
+  <script>
+    const basePriceInput = document.getElementById('basePrice');
+    const resultsDiv = document.getElementById('results');
+
+    const multipliers = [
+      { label: "86", price: 61.50 },
+      { label: "wkp", price: 76.00 },
+      { label: "172", price: 122.00 },
+      { label: "wkp2", price: 152.00 },
+      { label: "257", price: 177.50 },
+      { label: "258", price: 177.50 },
+      { label: "wkp3", price: 228.00 },
+      { label: "343", price: 239.00 },
+      { label: "344", price: 244.00 },
+      { label: "429", price: 299.50 },
+      { label: "wkp4", price: 304.00 },
+      { label: "430", price: 305.50 },
+      { label: "514", price: 355.00 },
+      { label: "wkp5", price: 380.00 },
+      { label: "twilight", price: 402.50 },
+      { label: "600", price: 416.50 },
+      { label: "706", price: 480.00 },
+      { label: "792", price: 541.50 },
+      { label: "878", price: 602.00 },
+      { label: "963", price: 657.50 },
+      { label: "1049", price: 719.00 },
+      { label: "1050", price: 724.00 },
+      { label: "1135", price: 779.50 },
+      { label: "1220", price: 835.00 },
+      { label: "1412", price: 960.00 },
+      { label: "1669", price: 1137.50 },
+      { label: "1841", price: 1259.50 },
+      { label: "2195", price: 1453.00 },
+      { label: "2901", price: 1940.00 },
+      { label: "3688", price: 2424.00 },
+      { label: "5532", price: 3660.00 },
+      { label: "9288", price: 6080.00 }
+    ];
+
+    function formatMMK(num) {
+      return num.toLocaleString("my-MM") + " Ks";
+    }
+
+    function formatNumber(num) {
+      return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+    }
+
+    function updateResults() {
+      const base = parseFloat(basePriceInput.value);
+      if (isNaN(base) || base <= 0) {
+        resultsDiv.innerHTML = '<p style="color: red; font-weight: 700;">ကျေးဇူးပြုပြီး ညှိထားတဲ့ ဈေးနူတ်တစ်ခု ထည့်ပါ။</p>';
+        return;
+      }
+
+      resultsDiv.innerHTML = "";
+
+      multipliers.forEach(({ label, price }) => {
+        const result = base * price;
+        const div = document.createElement("div");
+        div.className = "result-item";
+        div.innerHTML = `
+          <div class="highlight">${formatMMK(result)}</div>
+          <div class="label">${label}</div>
+          <div class="price">x ${formatNumber(price)}</div>
+        `;
+        resultsDiv.appendChild(div);
+      });
+    }
+
+    basePriceInput.addEventListener("input", updateResults);
+    updateResults();
+  </script>
+
+</body>
+</html>
