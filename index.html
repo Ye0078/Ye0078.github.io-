@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
+  <!-- Basic Meta Tags -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>လက်ရှိဝယ်ထားတဲ့ Smile one စျေးထည့်ပါ</title>
+  <!-- Favicon / Site Icon -->
   <link rel="icon" href="https://raw.githubusercontent.com/Ye0078/Ye0078.github.io-/refs/heads/main/330BCF00-0079-4DA2-9A25-38DD32F957BE.png" type="image/png" />
+
+  <!-- CSS Stylesheets -->
   <style>
+    /* Google Fonts Import */
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap');
 
+    /* Global Body Styles */
     body {
       background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
       font-family: 'Noto Sans Myanmar', sans-serif;
@@ -21,7 +27,7 @@
       padding-bottom: 70px; /* Space for fixed bottom navigation */
     }
 
-    /* Calculator Container Styles */
+    /* Main Calculator Container Styles */
     .container {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 20px;
@@ -35,7 +41,8 @@
       margin-top: 0; /* No top margin needed after removing top header */
     }
 
-    .page-logo { /* Renamed from .main-logo */
+    /* Page Logo Styles (Calculator Logo) */
+    .page-logo { 
       width: 100px;
       height: 100px;
       margin-bottom: 20px;
@@ -92,6 +99,7 @@
       }
     }
 
+    /* Input Label Styles */
     label {
       display: block;
       font-size: 16px;
@@ -100,6 +108,7 @@
       color: #333;
     }
 
+    /* Input Field (Number) Styles */
     input[type="number"] {
       max-width: 300px;
       display: block;
@@ -119,13 +128,22 @@
       box-shadow: 0 0 15px #ff6f91;
     }
 
+    /* Results Grid Container Styles */
     .results {
       margin-top: 30px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); /* Increased min-width for wider boxes */
       gap: 10px;
     }
 
+    /* Mobile Specific Styles for 3 Columns in Results Grid */
+    @media (max-width: 500px) {
+      .results {
+        grid-template-columns: repeat(3, 1fr); /* Force 3 columns on smaller screens */
+      }
+    }
+
+    /* Individual Result Item (Box) Styles */
     .result-item {
       background: #ffe1eb;
       border-radius: 16px;
@@ -153,6 +171,7 @@
       box-shadow: 0 10px 20px rgba(216, 30, 91, 0.3);
     }
 
+    /* Highlighted Price Text Styles */
     .highlight {
       font-size: 11px; /* Smaller font size for full display */
       color: #fff;
@@ -168,12 +187,14 @@
       max-width: 100%;
     }
 
+    /* Price Multiplier Text Styles */
     .price {
       font-size: 9px; /* Smaller font size */
       color: #ff6f91;
       opacity: 0.85;
     }
 
+    /* Label Text Styles for Multipliers */
     .label {
       font-size: 10px; /* Smaller font size */
       font-weight: 700;
@@ -225,16 +246,23 @@
 </head>
 <body>
 
+  <!-- Main Calculator Content Area -->
   <div class="container">
+    <!-- Calculator Page Logo -->
     <img src="https://raw.githubusercontent.com/Ye0078/Ye0078.github.io-/refs/heads/main/330BCF00-0079-4DA2-9A25-38DD32F957BE.png" alt="Calculator Logo" class="page-logo" />
     
+    <!-- Falling Stars Effect Container -->
     <div id="star-effect"></div>
 
+    <!-- Input Field Label -->
     <label for="basePrice">လက်ရှိဝယ်ထားတဲ့ Smile one စျေးထည့်ပါ</label>
+    <!-- Input Field for Base Price -->
     <input type="number" id="basePrice" min="0" value="770" />
+    <!-- Results Display Area -->
     <div class="results" id="results"></div>
   </div>
 
+  <!-- Bottom Navigation Bar -->
   <footer class="bottom-nav">
     <nav>
       <a href="index.html" class="nav-button">ပင်မ</a>
@@ -243,11 +271,14 @@
     </nav>
   </footer>
 
+  <!-- JavaScript for Calculator and Star Effect -->
   <script>
+    // Get DOM Elements
     const basePriceInput = document.getElementById('basePrice');
     const resultsDiv = document.getElementById('results');
     const starEffectContainer = document.getElementById('star-effect');
 
+    // Multiplier Data
     const multipliers = [
       { label: "86", price: 61.50 },
       { label: "wkp", price: 76.00 },
@@ -283,14 +314,17 @@
       { label: "9288", price: 6080.00 }
     ];
 
+    // Function to format currency (Myanmar Kyat)
     function formatMMK(num) {
       return num.toLocaleString("my-MM") + " Ks";
     }
 
+    // Function to format numbers (decimal places)
     function formatNumber(num) {
       return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
     }
 
+    // Function to update calculation results
     function updateResults() {
       const base = parseFloat(basePriceInput.value);
       if (isNaN(base) || base <= 0) {
@@ -298,7 +332,7 @@
         return;
       }
 
-      resultsDiv.innerHTML = "";
+      resultsDiv.innerHTML = ""; // Clear previous results
 
       multipliers.forEach(({ label, price }) => {
         const result = base * price;
@@ -313,7 +347,7 @@
       });
     }
 
-    // Function to create and add a single star
+    // Function to create and add a single star for animation
     function createStar() {
       const star = document.createElement('div');
       star.className = 'star';
@@ -344,7 +378,9 @@
     // Generate stars at a regular interval (every 200ms)
     setInterval(createStar, 200);
 
+    // Event listener for input changes
     basePriceInput.addEventListener("input", updateResults);
+    // Initial update on page load
     updateResults();
   </script>
 
